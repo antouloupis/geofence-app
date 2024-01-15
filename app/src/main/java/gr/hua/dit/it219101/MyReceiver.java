@@ -10,7 +10,8 @@ public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         active = true;
-        Log.d("Broadcast Receiver onReceive", "hello");
+        Log.d("Broadcast Receiver onReceive", "Stopping MyService");
+
         //logs when something happens
 
     }
