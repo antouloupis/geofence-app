@@ -2,8 +2,6 @@ package gr.hua.dit.it219101;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -32,23 +30,20 @@ public class MainActivity extends AppCompatActivity {
         Button mapButton = findViewById(R.id.mapButton);
         mapButton.setOnClickListener(v-> openMapActivity());
 
-//        BroadcastReceiver receiver = new MyReceiver();
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction(Intent.ACTION_PROVIDER_CHANGED);
-//        registerReceiver(receiver,filter);
+
 
 
 
 
     }
 
-    private void openResultsActivity() {
+    private void openResultsActivity() { //opens resultmapactivity
         Intent intent = new Intent(this, ResultsMapActivity.class);
         startActivity(intent);
     }
 
     private void stopMyService(SQLiteDatabase db) { //try to stop the tracking service
-        if (isServiceRunning(MyService.class)) {
+        if (MyService.isRunning()) {
             // Stop the service
 
             db.execSQL("DELETE FROM "+DbHelper.LAST_CENTER);//delete last session info and copy the new session over
@@ -57,26 +52,16 @@ public class MainActivity extends AppCompatActivity {
             db.execSQL("INSERT INTO "+DbHelper.LAST_CENTER+" SELECT * FROM "+DbHelper.CENTER_TABLE);
 
             stopService(new Intent(this, MyService.class));
-            Toast.makeText(this, "MyService stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "MyService stopped", Toast.LENGTH_SHORT).show(); //show toast to let user know
 
         } else {
             Toast.makeText(this, "MyService is not running", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void openMapActivity() {
+    public void openMapActivity() { //goto map activity
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

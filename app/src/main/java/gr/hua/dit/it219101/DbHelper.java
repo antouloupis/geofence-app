@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class DbHelper  extends SQLiteOpenHelper {
 
+    //setup variable names so we dont argue with db partner
     public static final String DB_NAME = "POINTS_DB";
     public static final int DB_VERSION = 1;
     public static final String CENTER_TABLE = "CENTER";
@@ -28,7 +29,7 @@ public class DbHelper  extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(@NonNull SQLiteDatabase sqLiteDatabase) {
+    public void onCreate(@NonNull SQLiteDatabase sqLiteDatabase) { //create tables
         sqLiteDatabase.execSQL("CREATE TABLE "+CENTER_TABLE+" ("+FIELD_LAT+" double,"+FIELD_LON+" double);");
         sqLiteDatabase.execSQL("CREATE TABLE "+TOUCH_TABLE+" ("+FIELD_LAT+" double,"+FIELD_LON+" double);");
         sqLiteDatabase.execSQL("CREATE TABLE "+LAST_TOUCH+" ("+FIELD_LAT+" double,"+FIELD_LON+" double);");
@@ -60,7 +61,7 @@ public class DbHelper  extends SQLiteOpenHelper {
         }
         return latLngList;
     }
-
+    //same as above but for the last session circle centers
     public ArrayList<LatLng> getLastCenter() {
         ArrayList<LatLng> latLngList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -80,6 +81,7 @@ public class DbHelper  extends SQLiteOpenHelper {
         return latLngList;
     }
 
+    //same as above but for last session where the user touched the edge of the circle
     public ArrayList<LatLng> getLastTouch() {
         ArrayList<LatLng> latLngList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

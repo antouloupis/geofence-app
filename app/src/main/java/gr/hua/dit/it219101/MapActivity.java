@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener/*, GoogleMap.OnMapLongClickListener*/ {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     public static final int CHECK_FINE_LOCATION_CODE = 26;
     private GoogleMap mMap;
@@ -46,6 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         DbHelper dbHelper = new DbHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        //delete previous table entries. Before these are deleted, when stopService runs, all previous info goes to the last_Session tables
         db.execSQL("DELETE FROM " + DbHelper.CENTER_TABLE);
         db.execSQL("DELETE FROM " + DbHelper.TOUCH_TABLE);
 
@@ -80,7 +80,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void beginTracking(SQLiteDatabase db) { //adds location variables to db and returns to mainActivity, starts service
         ContentValues values = new ContentValues();
-        for (Circle circle : circleList) {
+        for (Circle circle : circleList) { //for every circle the user has created
             values.put(DbHelper.FIELD_LAT, circle.getCenter().latitude); //put lat to values
             values.put(DbHelper.FIELD_LON, circle.getCenter().longitude); //put lng to values
             db.insert(DbHelper.CENTER_TABLE, null, values);
@@ -98,7 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     // Permissions not granted, show toast
                     Toast.makeText(this, "Permissions not granted!", Toast.LENGTH_LONG).show();
-                } else { //start service?
+                } else { //start service
                     startMyService();
                 }
 
@@ -108,16 +108,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
     public void onMapClick(@NonNull LatLng point) {
-        // When the user makes a long press, place a circle at that location
+        // When user clicks on map, create a circle 100m radius with center on click point
         CircleOptions circleOptions = new CircleOptions()
                 .center(point)
-                .radius(100) // In meters
-                .fillColor(0x30ff0000) // Red, but with transparency
+                .radius(100)
+                .fillColor(0x30ff0000)
                 .strokeColor(Color.RED)
                 .strokeWidth(2);
 
-        Circle circle = mMap.addCircle(circleOptions);
-        circleList.add(circle);
+        Circle circle = mMap.addCircle(circleOptions); //add circle to map overlay to display
+        circleList.add(circle); //add circle to arraylist
 
     }
 
@@ -130,7 +130,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Enable the My Location layer and the related control on the map.
+        // google map overlay (top right button)
         updateLocationUI();
 
         // Set a listener for map click.
@@ -154,9 +154,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
         try {
-            // Turn on the My Location layer and the related control on the map.
+            // my location button top right
             mMap.setMyLocationEnabled(true);
-            //mMap.getUiSettings().setMyLocationButtonEnabled(true);
         } catch (SecurityException e) {
             // Exception if location permissions are not granted.
             e.printStackTrace();
@@ -165,15 +164,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        Circle circleToRemove = null;
+        Circle circleToRemove = null; //circle to be removed if long pressed
 
-        // Iterate over all circles to check if the long press is inside any circle
+        // for every circle in arraylist, check if the user long pressed inside the radius of a circle. If yes, delete the circle whos center is closest to the click
         for (Circle circle : circleList) {
             LatLng circleCenter = circle.getCenter();
             double d = calculateDistance(latLng.latitude,latLng.longitude,circleCenter.latitude,circleCenter.longitude);
             if (d <= 100.00) {
                 circleToRemove = circle;
-                break; // Exit loop once a circle containing the long press is found
+                break; // break when circle is found
             }
         }
 
@@ -198,6 +197,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return R * c; // Distance in meters
+        return R * c;
     }
 }

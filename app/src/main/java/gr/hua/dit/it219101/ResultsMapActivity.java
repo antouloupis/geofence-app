@@ -5,25 +5,23 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -43,13 +41,21 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
         setContentView(R.layout.activity_results_map);
 
         DbHelper dbHelper = new DbHelper(getApplicationContext()); // Initialize dbHelper
-        last_center = dbHelper.getLastCenter();
-        last_touch = dbHelper.getLastTouch();
+        last_center = dbHelper.getLastCenter(); //array list for last session circle centers
+        last_touch = dbHelper.getLastTouch(); //array list for last session user locations where enter/exit a circle
         db = dbHelper.getWritableDatabase();
+
+        //Return BUTTON SETUP
+        Button returnButton = findViewById(R.id.returnButton);
+        returnButton.setOnClickListener((v -> goBack()));
+
+        //pause/start BUTTON SETUP
+        Button pauseButton = findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener((v -> StartStop(pauseButton)));
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -57,15 +63,28 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
+    private void StartStop(Button button) { //stop service if running, start if not, change text for user to know
+        if (MyService.isRunning()){
+            button.setText("Restart Service");
+            stopService(new Intent(this, MyService.class));
+        } else {
+            startService(new Intent(this, MyService.class));
+
+            button.setText("Stop Service");
+        }
+    }
+
+    private void goBack() { //finish and return
+        finish();
+    }
 
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
 
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        //default perm check for location manager
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -75,7 +94,7 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,16));
 
         }
-        // Enable the My Location layer and the related control on the map.
+        // enable google overlay, create markers and circles
         updateLocationUI();
         createMarkers();
         createCircles();
@@ -84,7 +103,7 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
 
     }
 
-    private void updateLocationUI() {
+    private void updateLocationUI() { //display google overlay (bottom left & top right button)
         if (mMap == null) {
             return;
         }
@@ -98,7 +117,7 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
         }
     }
 
-    private void createCircles() {
+    private void createCircles() { //for each latlng in the array list create a new circle and add on map where the center is
         for (LatLng latLng:last_center) {
             CircleOptions circleOptions = new CircleOptions()
                     .center(latLng)
@@ -113,20 +132,13 @@ public class ResultsMapActivity extends FragmentActivity implements OnMapReadyCa
         }
     }
 
-    private void createMarkers() {
+    private void createMarkers() { //for each latlng in the last_touch arraylist which is same as db, create a marker and add to map
         for (LatLng latLng:last_touch) {
             mMap.addMarker(new MarkerOptions().position(latLng));
 
         }
     }
 
-    private class MyLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-
-        }
-    }
 
 
 }
