@@ -6,10 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyAmtcZ3EbrPnI_AGnyKTwuvbtgvettD0tw" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,34 +16,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.It219101"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDVwyaTf5TZQ3Oj3VaFvuR7sR9OxjG0E7Q" />
+
+        <activity
+            android:name=".ResultsMapActivity"
+            android:exported="false" />
+
         <service
             android:name=".MyService"
             android:enabled="true"
-            android:exported="false"></service>
-        <!--
-             TODO: Before you run your application, you need a Google Maps API key.
-
-             To get one, follow the directions here:
-
-                https://developers.google.com/maps/documentation/android-sdk/get-api-key
-
-             Once you have your API key (it starts with "AIza"), define a new property in your
-             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
-             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" />
-
-        <activity
-            android:name=".MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" />
-
-        <receiver
-            android:name=".MyReceiver"
-            android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <activity
             android:name=".MapActivity"
@@ -61,6 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
