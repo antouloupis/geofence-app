@@ -143,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); //MOVE CAMERA TO LAST KNOWN LOCATION
         if (lastKnownLocation != null) {
             LatLng currentLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,16));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,16)); //partially from stackoverflow https://stackoverflow.com/questions/20316698/get-google-maps-to-automatically-zoom-in-on-my-current-location
 
         }
 
