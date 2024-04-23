@@ -27,9 +27,10 @@ Should you wish to run this app, you must provide your own google maps api key, 
 ## Installation
 
 To run this app:
-1. Clone this repository in android studio
-2. Connect your android emulator (Pixel 2 API 29 was used to develop this app)
-3. Compile & run
+1. Clone this repository
+2. Open [android studio](https://developer.android.com/studio) (Hedgehog version was used in development)
+3. Connect your android emulator (Pixel 2 API 29 was used to develop this app)
+4. Compile & run.  
 
 ## Usage
 
