@@ -8,8 +8,9 @@ In this project, the user sets geofences by tapping on a map, which creates a ci
 After setting the geofences, a service starts which tracks if the users location has changed more than 50m in the last 5 seconds.
 The user can stop the service via the button in the main activity. 
 After the service stops, the user can see the geofences that had been set in the previous run, as well as pins on the map where they entered/exited.
+The location data of the user entries/exits is stored in a database.
 
-### Any key found in the code has been terminated and will not work as they have been deactivated.
+### Any API key found in the code has been terminated and will not work.
 Should you wish to run this app, you must provide your own google maps api key, and place it in the android-manifest.xml android:value tag found in :
 <meta-data
             android:name="com.google.android.geo.API_KEY"
