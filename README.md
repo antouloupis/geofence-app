@@ -1,4 +1,4 @@
-# Geofence andorid app (for Mobile development class)
+# Geofence android app (for Mobile development class)
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
